@@ -8,8 +8,10 @@ articles. It also allows for single-tag embedding of D3.js.
 """
 import os
 import shutil
+import json
 
 from pelican import signals
+
 
 def format_resource(gen, metastring, formatter):
     """
@@ -31,6 +33,7 @@ def format_resource(gen, metastring, formatter):
     metalist = metastring.replace(" ", "").split(',')
     site_url = gen.settings['SITEURL']
     return [formatter.format(site_url, x) for x in metalist]
+
 
 def copy_resources(src, dest, file_list):
     """
@@ -55,6 +58,7 @@ def copy_resources(src, dest, file_list):
         file_src = os.path.join(src, file_)
         shutil.copy2(file_src, dest)
 
+
 def add_tags(gen, metadata):
     """
         The registered handler for the dynamic resources plugin. It will
@@ -71,6 +75,19 @@ def add_tags(gen, metadata):
     if 'd3' in metadata.keys():
         d3_script = '<script src="http://d3js.org/d3.v3.min.js"></script>'
         metadata['scripts'].insert(0, d3_script)
+
+    if 'links' in metadata.keys():
+        #
+        # linksObj =
+        #
+        # site_url = gen.settings['SITEURL']
+        #
+        # for link in linksObj:
+        #     url = link["url"]
+        #     text = link["text"]
+
+        metadata['links'] = json.loads(metadata['links'])#"<a href='{url}'>{text}</a>"
+
 
 def move_resources(gen):
     """
@@ -93,3 +110,4 @@ def register():
     signals.article_generator_context.connect(add_tags)
     signals.page_generator_context.connect(add_tags)
     signals.article_generator_finalized.connect(move_resources)
+
